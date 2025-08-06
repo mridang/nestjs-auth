@@ -1,3 +1,4 @@
+// src/auth.guards.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -10,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
 import { Auth, createActionURL, setEnvDefaults } from '@auth/core';
-import type { Session, User } from '@auth/core/types';
+import type {
+  Session as CoreSession,
+  User as CoreUser
+} from '@auth/core/types';
 import memoize from 'memoize';
 import { HttpAdapter } from './adapters/http.adapter.js';
 import { AdapterFactory } from './utils/adapter.factory.js';
@@ -19,9 +23,10 @@ import type { IAuthModuleOptions } from './auth-module.options.js';
 import { AuthModuleOptions } from './auth-module.options.js';
 import { IS_PUBLIC_KEY } from './auth.decorators.js';
 import { AuthenticatedRequest } from './types.js';
+import { AuthSession as AuthSessionClass } from './auth.session.js';
 
 export type IAuthGuard = CanActivate & {
-  handleRequest<TUser = Session['user']>(
+  handleRequest<TUser = CoreUser>(
     err: Error | null,
     user: TUser | null,
     info: unknown,
@@ -114,17 +119,16 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      * @param _info Additional information (not used).
      * @param _context The `ExecutionContext` (not used).
      * @param status The session expiration status.
-     * @returns The validated `User` object.
+     * @returns The validated `CoreUser` object.
      * @throws {UnauthorizedException} If `err` is present or `user` is null.
      */
     handleRequest(
       err: Error | null,
-      user: User | null,
+      user: CoreUser | null,
       _info: unknown,
-
       _context: ExecutionContext,
       status?: unknown
-    ): User {
+    ): CoreUser {
       if (err) {
         authLogger.error(`Authentication error: ${err.message}`);
       }
@@ -194,12 +198,20 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         ...(await this.getAuthenticateOptions(context))
       };
 
-      const [session] = await this.getSessionOrError(request, mergedOptions);
+      const [coreSession] = await this.getSessionOrError(
+        request,
+        mergedOptions
+      );
+      const publicSession =
+        AuthSessionClass.fromCore(coreSession)?.toJSON() ?? null;
+
       const property = mergedOptions.property ?? defaultOptions.property;
 
       Object.assign(request, {
-        session,
-        [property]: session?.user ?? null
+        // keep core session on the request to match AuthenticatedRequest
+        session: coreSession,
+        // expose user from the mapped public session
+        [property]: publicSession?.user ?? null
       });
 
       return true;
@@ -225,23 +237,26 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         ...(await this.getAuthenticateOptions(context))
       };
 
-      const [session, error] = await this.getSessionOrError(
+      const [coreSession, error] = await this.getSessionOrError(
         request,
         mergedOptions
       );
 
+      const publicSession =
+        AuthSessionClass.fromCore(coreSession)?.toJSON() ?? null;
+
       const user = this.handleRequest(
         error,
-        session?.user ?? null,
-        session,
+        publicSession?.user ?? null,
+        publicSession,
         context,
-        session?.expires
+        publicSession?.expires
       );
 
       const property = mergedOptions.property ?? defaultOptions.property;
 
       Object.assign(request, {
-        session,
+        session: coreSession,
         [property]: user
       });
 
@@ -258,7 +273,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
     private async getSessionOrError(
       request: unknown,
       options: IAuthModuleOptions
-    ): Promise<[Session | null, Error | null]> {
+    ): Promise<[CoreSession | null, Error | null]> {
       try {
         const session = await this.getSession(request, options);
         return [session, null];
@@ -276,7 +291,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
     private async getSession(
       request: unknown,
       options: IAuthModuleOptions
-    ): Promise<Session | null> {
+    ): Promise<CoreSession | null> {
       const adapter = this.getOrCreateAdapter();
       if (!options.providers?.length) {
         throw new Error('No authentication providers configured');
@@ -310,7 +325,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         return null;
       }
       try {
-        return (await response.json()) as Session;
+        return (await response.json()) as CoreSession;
       } catch {
         return null;
       }

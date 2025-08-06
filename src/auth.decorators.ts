@@ -3,7 +3,8 @@ import {
   ExecutionContext,
   SetMetadata
 } from '@nestjs/common';
-import type { Session } from '@auth/core/types';
+import type { Session } from './types.js';
+import { AuthSession as AuthSessionClass } from './auth.session.js';
 
 export const IS_PUBLIC_KEY = Symbol('isPublic');
 export const REQUIRED_ROLES_KEY = Symbol('requiredRoles');
@@ -113,10 +114,14 @@ export const RequireRoles = (...roles: readonly string[]): MethodDecorator =>
  * @returns The current session object or null if no session exists
  */
 export const AuthSession = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): Session | null => {
+  (_data: unknown, ctx: ExecutionContext): Session | null => {
     const request = ctx
       .switchToHttp()
-      .getRequest<Request & { session?: Session }>();
-    return request.session ?? null;
+      .getRequest<unknown & { session?: unknown }>();
+    return (
+      AuthSessionClass.fromCore(
+        request.session as unknown as import('@auth/core/types').Session | null
+      )?.toJSON() ?? null
+    );
   }
 );

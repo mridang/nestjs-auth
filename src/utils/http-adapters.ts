@@ -40,7 +40,7 @@ export function toWebRequest(
 
   let body: RequestBody | undefined;
 
-  if (!/GET|HEAD/.test(method)) {
+  if (!/GET|HEAD/.test(method.toUpperCase())) {
     const rawBody = adapter.getBody(request);
 
     if (rawBody !== undefined && rawBody !== null) {

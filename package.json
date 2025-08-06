@@ -48,7 +48,6 @@
     "security"
   ],
   "peerDependencies": {
-    "@auth/core": "^0.40.0",
     "@nestjs/common": "^10.0.0 || ^11.0.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request as ExpressRequest } from 'express';
-import type { Session } from '@auth/core/types';
+import type { Session } from './types.js';
 
 // Import the symbol from decorators
 import { REQUIRED_ROLES_KEY } from './auth.decorators.js';

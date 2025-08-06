@@ -1,5 +1,5 @@
 import type { ExecutionContext } from '@nestjs/common';
-import { AuthenticatedRequest } from '../types.js';
+import type { AuthenticatedRequest } from '../types.js';
 
 /**
  * An abstract class that defines a standardized interface for interacting with
