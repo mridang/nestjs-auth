@@ -24,7 +24,7 @@ export class AuthController {
    * - GET /auth/session
    * - etc.
    */
-  @All('*')
+  @All('*path')
   async handleAuthRoutes(
     @Req() req: ExpressRequest | FastifyRequest,
     @Res() res: ExpressResponse | FastifyReply,
