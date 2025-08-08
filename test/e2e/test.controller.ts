@@ -79,4 +79,10 @@ export class E2EController {
       staffAccess: true
     };
   }
+
+  @Get('auth/login')
+  @Public()
+  customAuthLogin() {
+    return { page: 'custom-login', ok: true };
+  }
 }

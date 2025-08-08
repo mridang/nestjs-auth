@@ -232,7 +232,8 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                     { path: '/user/settings', expectedStatus: 401 },
                     { path: '/admin/dashboard', expectedStatus: 401 },
                     { path: '/staff/area', expectedStatus: 401 },
-                    { path: '/auth/session', expectedStatus: 200 }
+                    { path: '/auth/session', expectedStatus: 200 },
+                    { path: '/auth/login', expectedStatus: 200 }
                   ]
                 : actor === 'user'
                   ? [
@@ -242,7 +243,8 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                       { path: '/user/settings', expectedStatus: 200 },
                       { path: '/admin/dashboard', expectedStatus: 403 },
                       { path: '/staff/area', expectedStatus: 403 },
-                      { path: '/auth/session', expectedStatus: 200 }
+                      { path: '/auth/session', expectedStatus: 200 },
+                      { path: '/auth/login', expectedStatus: 200 }
                     ]
                   : [
                       { path: '/public', expectedStatus: 200 },
@@ -251,7 +253,8 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                       { path: '/user/settings', expectedStatus: 200 },
                       { path: '/admin/dashboard', expectedStatus: 200 },
                       { path: '/staff/area', expectedStatus: 200 },
-                      { path: '/auth/session', expectedStatus: 200 }
+                      { path: '/auth/session', expectedStatus: 200 },
+                      { path: '/auth/login', expectedStatus: 200 }
                     ]
               ).forEach(({ path, expectedStatus }) => {
                 test(`${path} → ${expectedStatus}`, async () => {
