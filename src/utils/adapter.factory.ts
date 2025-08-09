@@ -23,7 +23,7 @@ export class AdapterFactory {
       case 'FastifyAdapter':
         return new FastifyAdapter();
       default:
-        return new ExpressAdapter();
+        throw new Error(`Unsupported HTTP adapter: ${adapterName}`);
     }
   }
 }
