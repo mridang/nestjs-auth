@@ -5,6 +5,7 @@ import type {
 } from 'express';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import qs from 'qs';
+import { Readable } from 'node:stream';
 
 // Narrow body type to what we actually use with fetch/Request in Node.
 type RequestBody = string | Buffer;
@@ -102,5 +103,29 @@ export async function toHttpResponse(
   });
 
   adapter.setStatus(res, webResponse.status);
-  adapter.send(res, await webResponse.text());
+
+  const body = webResponse.body;
+  if (body) {
+    const reader = body.getReader();
+    const nodeStream = Readable.from(
+      (async function* () {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              yield Buffer.from(value);
+            }
+          }
+        } finally {
+          reader.releaseLock();
+        }
+      })()
+    );
+
+    adapter.send(res, nodeStream);
+  } else {
+    const text = await webResponse.text();
+    adapter.send(res, text);
+  }
 }

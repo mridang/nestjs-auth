@@ -5,6 +5,7 @@ import type {
 } from 'express';
 import { HttpAdapter } from './http.adapter.js';
 import type { AuthenticatedRequest } from '../types.js';
+import { Readable } from 'node:stream';
 
 /**
  * Express adapter for NestJS Auth.js module.
@@ -65,7 +66,11 @@ export class ExpressAdapter extends HttpAdapter<
     response.status(code);
   }
 
-  send(response: ExpressResponse, body: string): void {
-    response.send(body);
+  send(response: ExpressResponse, body: string | Buffer | Readable): void {
+    if (typeof body === 'string' || Buffer.isBuffer(body)) {
+      response.send(body);
+    } else {
+      body.pipe(response);
+    }
   }
 }

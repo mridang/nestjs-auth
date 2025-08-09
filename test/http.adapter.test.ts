@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import type {
   Request as ExpressRequest,
   Response as ExpressResponse
@@ -6,6 +7,24 @@ import type { FastifyRequest } from 'fastify';
 // noinspection ES6PreferShortImport
 import { toHttpResponse, toWebRequest } from '../src/utils/http-adapters.js';
 import { HttpAdapter } from '../src/adapters/http.adapter.js';
+
+function readBodyToString(
+  body: string | Buffer | Readable | undefined
+): Promise<string> {
+  if (typeof body === 'string') return Promise.resolve(body);
+  if (Buffer.isBuffer(body)) return Promise.resolve(body.toString('utf8'));
+  if (!body) return Promise.resolve('');
+
+  return new Promise<string>((resolve, reject) => {
+    const bufs: Buffer[] = [];
+    body.on('data', (chunk: unknown) => {
+      if (Buffer.isBuffer(chunk)) bufs.push(chunk);
+      else bufs.push(Buffer.from(String(chunk)));
+    });
+    body.on('end', () => resolve(Buffer.concat(bufs).toString('utf8')));
+    body.on('error', reject);
+  });
+}
 
 describe('Framework Agnostic HTTP Conversion', () => {
   const frameworks = [
@@ -129,14 +148,14 @@ describe('Framework Agnostic HTTP Conversion', () => {
     test('groups multiple "set-cookie" headers into an array', async () => {
       const captured: {
         status?: number;
-        body?: string;
+        body?: string | Buffer | Readable;
         headers: Record<string, string | string[]>;
       } = { headers: {} };
 
       const adapter: Partial<HttpAdapter<unknown, unknown>> = {
-        setHeader: (res, key, value) => (captured.headers[key] = value),
-        setStatus: (res, code) => (captured.status = code),
-        send: (res, body) => (captured.body = body)
+        setHeader: (_res, key, value) => (captured.headers[key] = value),
+        setStatus: (_res, code) => (captured.status = code),
+        send: (_res, body) => (captured.body = body)
       };
 
       const webResponse = new Response('OK', {
@@ -154,8 +173,10 @@ describe('Framework Agnostic HTTP Conversion', () => {
         adapter as HttpAdapter<unknown, unknown>
       );
 
+      const bodyText = await readBodyToString(captured.body);
+
       expect(captured.status).toBe(201);
-      expect(captured.body).toBe('OK');
+      expect(bodyText).toBe('OK');
       expect(captured.headers['content-type']).toBe('text/plain');
       expect(captured.headers['set-cookie']).toEqual([
         'A=1; Path=/; HttpOnly',

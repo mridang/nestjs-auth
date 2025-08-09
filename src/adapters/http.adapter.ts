@@ -1,5 +1,6 @@
 import type { ExecutionContext } from '@nestjs/common';
 import type { AuthenticatedRequest } from '../types.js';
+import { Readable } from 'node:stream';
 
 /**
  * An abstract class that defines a standardized interface for interacting with
@@ -99,8 +100,9 @@ export abstract class HttpAdapter<TRequest, TResponse> {
 
   /**
    * Sends the final response to the client.
+   * Accepts text, binary buffers, or streaming bodies.
    * @param response The framework-specific response object.
-   * @param body The response body to send as a string.
+   * @param body The response body to send.
    */
-  abstract send(response: TResponse, body: string): void;
+  abstract send(response: TResponse, body: string | Buffer | Readable): void;
 }

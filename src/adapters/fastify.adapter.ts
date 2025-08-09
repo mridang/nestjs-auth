@@ -2,6 +2,7 @@ import type { ExecutionContext } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { HttpAdapter } from './http.adapter.js';
 import type { AuthenticatedRequest } from '../types.js';
+import { Readable } from 'node:stream';
 
 /**
  * Fastify adapter for NestJS Auth.js module.
@@ -59,7 +60,11 @@ export class FastifyAdapter extends HttpAdapter<FastifyRequest, FastifyReply> {
     response.status(code);
   }
 
-  send(response: FastifyReply, body: string): void {
-    response.send(body);
+  send(response: FastifyReply, body: string | Buffer | Readable): void {
+    if (typeof body === 'string' || Buffer.isBuffer(body)) {
+      response.send(body);
+    } else {
+      response.send(body);
+    }
   }
 }
