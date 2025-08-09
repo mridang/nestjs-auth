@@ -2,8 +2,6 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request as ExpressRequest } from 'express';
 import type { Session } from './types.js';
-
-// Import the symbol from decorators
 import { REQUIRED_ROLES_KEY } from './auth.decorators.js';
 
 /**
@@ -42,7 +40,6 @@ export class RolesGuard implements CanActivate {
       [context.getHandler(), context.getClass()]
     );
 
-    // If no roles are required, allow access
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
@@ -55,7 +52,6 @@ export class RolesGuard implements CanActivate {
 
     const userRoles = request.user?.roles ?? [];
 
-    // User must have at least one of the required roles
     return requiredRoles.some((role) => userRoles.includes(role));
   }
 }

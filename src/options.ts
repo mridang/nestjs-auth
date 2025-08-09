@@ -1,4 +1,3 @@
-// file: src/options.ts
 /**
  * Default configuration options for the Auth.js module.
  *

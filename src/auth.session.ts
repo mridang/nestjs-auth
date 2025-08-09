@@ -1,5 +1,3 @@
-// src/auth.session.ts
-
 import type { Session as CoreSession } from '@auth/core/types';
 import type { Session, AuthUser } from './types.js';
 
@@ -29,7 +27,6 @@ export class AuthSession implements Session {
    * source object (e.g., tokens added by app callbacks).
    */
   constructor(src: CoreSession | Partial<Session>) {
-    // user
     const srcAsRec = toRecord(src);
     const srcUser = toRecord(srcAsRec?.user);
     if (srcUser) {

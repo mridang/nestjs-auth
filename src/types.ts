@@ -1,5 +1,3 @@
-// src/types.ts
-
 import type { Session as CoreSession } from '@auth/core/types';
 
 /**

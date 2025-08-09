@@ -22,7 +22,6 @@ declare global {
   }
 }
 
-// This extends the fastify module for Fastify
 declare module 'fastify' {
   interface FastifyRequest {
     /** The Auth.js session object. */

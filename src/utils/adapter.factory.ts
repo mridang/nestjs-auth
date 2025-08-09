@@ -23,7 +23,6 @@ export class AdapterFactory {
       case 'FastifyAdapter':
         return new FastifyAdapter();
       default:
-        // Default to Express adapter for compatibility
         return new ExpressAdapter();
     }
   }
