@@ -29,8 +29,7 @@ export type IAuthGuard = CanActivate & {
     err: Error | null,
     user: TUser | null,
     info: unknown,
-    context: ExecutionContext,
-    status?: unknown
+    context: ExecutionContext
   ): TUser;
   getAuthenticateOptions(
     context: ExecutionContext
@@ -115,19 +114,10 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      * throwing an exception if authentication fails or the user is not found.
      * @param err An error object if an exception occurred.
      * @param user The user object from the session if successful.
-     * @param _info Additional information (not used).
-     * @param _context The `ExecutionContext` (not used).
-     * @param status The session expiration status.
      * @returns The validated `CoreUser` object.
      * @throws {UnauthorizedException} If `err` is present or `user` is null.
      */
-    handleRequest(
-      err: Error | null,
-      user: CoreUser | null,
-      _info: unknown,
-      _context: ExecutionContext,
-      status?: unknown
-    ): CoreUser {
+    handleRequest(err: Error | null, user: CoreUser | null): CoreUser {
       if (err) {
         authLogger.error(`Authentication error: ${err.message}`);
       }
@@ -139,12 +129,6 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
       }
       if (!user) {
         throw new UnauthorizedException('No user found in session');
-      }
-      if (status && typeof status === 'string') {
-        const expiry = new Date(status);
-        if (expiry < new Date()) {
-          throw new UnauthorizedException('Session expired');
-        }
       }
       return user;
     }
@@ -244,13 +228,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
       const publicSession =
         AuthSessionClass.fromCore(coreSession)?.toJSON() ?? null;
 
-      const user = this.handleRequest(
-        error,
-        publicSession?.user ?? null,
-        publicSession,
-        context,
-        publicSession?.expires
-      );
+      const user = this.handleRequest(error, publicSession?.user ?? null);
 
       const property = mergedOptions.property ?? defaultOptions.property;
 
