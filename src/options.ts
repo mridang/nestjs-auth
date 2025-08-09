@@ -73,7 +73,7 @@ export const defaultOptions = {
    * In production, you should explicitly set this or configure
    * allowed hosts to prevent host header injection attacks
    */
-  trustHost: process.env.NODE_ENV === 'development',
+  trustHost: false,
 
   /**
    * Enable CSRF protection
