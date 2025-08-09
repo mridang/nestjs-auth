@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import type { FactoryProvider, Provider, Type } from '@nestjs/common';
 import { Injectable, Module } from '@nestjs/common';
 import { APP_GUARD, HttpAdapterHost } from '@nestjs/core';
 // noinspection ES6PreferShortImport
@@ -13,8 +14,6 @@ import type {
 import { AuthModuleOptions } from '../src/auth-module.options.js';
 // noinspection ES6PreferShortImport
 import { AuthController } from '../src/auth.controller.js';
-
-import type { Provider, FactoryProvider, Type } from '@nestjs/common';
 
 /* -------------------------- helpers / type guards ------------------------- */
 

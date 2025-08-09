@@ -14,7 +14,9 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 @Controller('auth')
 @Public()
 export class AuthController {
-  constructor(private readonly authMiddleware: AuthMiddleware) {}
+  constructor(private readonly authMiddleware: AuthMiddleware) {
+    //
+  }
 
   /**
    * Handles all Auth.js routes including

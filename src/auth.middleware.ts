@@ -44,7 +44,6 @@ export class AuthMiddleware implements NestMiddleware {
       const webRequest = toWebRequest(req, this.httpAdapter);
       const webResponse = await Auth(webRequest, config);
       await toHttpResponse(webResponse, res, this.httpAdapter);
-      next();
     } catch (error) {
       next(error);
     }
