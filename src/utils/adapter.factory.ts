@@ -9,21 +9,15 @@ import { FastifyAdapter } from '../adapters/fastify.adapter.js';
  */
 export class AdapterFactory {
   static create(adapterHost: HttpAdapterHost): HttpAdapter<unknown, unknown> {
-    const httpAdapter = adapterHost.httpAdapter;
+    const kind = adapterHost.httpAdapter.getType();
 
-    if (!httpAdapter) {
-      throw new Error('No HTTP adapter found');
-    }
-
-    const adapterName = httpAdapter.constructor.name;
-
-    switch (adapterName) {
-      case 'ExpressAdapter':
+    switch (kind) {
+      case 'express':
         return new ExpressAdapter();
-      case 'FastifyAdapter':
+      case 'fastify':
         return new FastifyAdapter();
       default:
-        throw new Error(`Unsupported HTTP adapter: ${adapterName}`);
+        throw new Error(`Unsupported HTTP adapter: ${kind}`);
     }
   }
 }
