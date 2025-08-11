@@ -17,7 +17,7 @@
  * })
  * ```
  */
-export const defaultOptions = {
+export const defaultOptions = Object.freeze({
   /**
    * Session configuration
    */
@@ -113,4 +113,4 @@ export const defaultOptions = {
       return baseUrl;
     }
   }
-} as const;
+} as const);
