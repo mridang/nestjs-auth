@@ -1,6 +1,7 @@
 import type { ExecutionContext } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { FastifyAdapter } from '../../src/adapters/fastify.adapter.js';
+// noinspection ES6PreferShortImport
 import { AuthenticatedRequest } from '../../src/types.js';
 
 describe('FastifyAdapter', () => {

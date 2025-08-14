@@ -4,6 +4,7 @@ import type {
   Response as ExpressResponse
 } from 'express';
 import { ExpressAdapter } from '../../src/adapters/express.adapter.js';
+// noinspection ES6PreferShortImport
 import { AuthenticatedRequest } from '../../src/types.js';
 
 describe('ExpressAdapter', () => {
