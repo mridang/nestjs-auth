@@ -68,7 +68,7 @@ export const defaultOptions = Object.freeze({
 
   /**
    * Whether to trust the Host header
-   * @default true in development, false in production
+   * @default false
    * @remarks
    * In production, you should explicitly set this or configure
    * allowed hosts to prevent host header injection attacks
