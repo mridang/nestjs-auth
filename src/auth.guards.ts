@@ -125,7 +125,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         throw err;
       }
       if (err) {
-        throw new UnauthorizedException(err.message);
+        throw new UnauthorizedException(err.message, { cause: err });
       }
       if (!user) {
         throw new UnauthorizedException('No user found in session');
