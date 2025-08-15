@@ -6,7 +6,7 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { URL } from 'url';
 import type { AddressInfo } from 'node:net';
-import type { E2EUser } from '../e2e.module.js';
+import type { TestUser } from '../client-sessions.module.js';
 
 type HttpServerWithAddress = { address(): string | AddressInfo | null };
 
@@ -19,7 +19,7 @@ function asHeaderMap(
 export async function authenticateOidc(
   app: INestApplication,
   agent: ReturnType<typeof request.agent>,
-  who: E2EUser
+  who: TestUser
 ): Promise<void> {
   const srv = app.getHttpServer() as HttpServerWithAddress;
   const addr = srv.address();
