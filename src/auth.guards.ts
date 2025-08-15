@@ -213,6 +213,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
       context: ExecutionContext
     ): Promise<boolean> {
       const request = this.getRequest(context);
+      const response = this.getResponse(context);
       const mergedOptions = {
         providers: [],
         ...defaultOptions,
@@ -225,19 +226,36 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         mergedOptions
       );
 
-      const publicSession =
-        AuthSessionClass.fromCore(coreSession)?.toJSON() ?? null;
+      const publicSession = AuthSessionClass.fromCore(coreSession)?.toJSON();
 
-      const user = this.handleRequest(error, publicSession?.user ?? null);
+      if (!publicSession?.user || error) {
+        const acceptsHtml = request.headers?.accept?.includes('text/html');
 
-      const property = mergedOptions.property ?? defaultOptions.property;
+        if (acceptsHtml) {
+          const callbackUrl = encodeURIComponent(request.url || '/');
+          const signInUrl = mergedOptions.pages?.signIn || '/auth/signin';
+          const redirectUrl = `${signInUrl}?callbackUrl=${callbackUrl}`;
 
-      Object.assign(request, {
-        session: coreSession,
-        [property]: user
-      });
+          const adapter = this.getOrCreateAdapter();
+          adapter.setStatus(response, 302);
+          adapter.setHeader(response, 'Location', redirectUrl);
+          adapter.send(response, '');
+          return false;
+        } else {
+          this.handleRequest(error, publicSession?.user ?? null);
+          return false;
+        }
+      } else {
+        const user = this.handleRequest(error, publicSession?.user ?? null);
+        const property = mergedOptions.property ?? defaultOptions.property;
 
-      return true;
+        Object.assign(request, {
+          session: coreSession,
+          [property]: user
+        });
+
+        return true;
+      }
     }
 
     /**

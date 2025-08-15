@@ -290,6 +290,42 @@ describe('ServerSessions E2E matrix (strategy x cookie modes x access matrix)', 
                   });
                 }
               });
+
+              test('unauthenticated browser requests get redirected to sign-in page', async () => {
+                const agent = request.agent(appRef!.getHttpServer());
+
+                const browserRes = await agent
+                  .get('/profile')
+                  .set(
+                    'Accept',
+                    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                  )
+                  .expect(302);
+
+                expect(browserRes.headers.location).toBe(
+                  '/auth/signin?callbackUrl=%2Fprofile'
+                );
+              });
+
+              test('unauthenticated API requests get JSON 401 responses', async () => {
+                const agent = request.agent(appRef!.getHttpServer());
+
+                await agent
+                  .get('/profile')
+                  .expect(401)
+                  .expect('Content-Type', /json/)
+                  .expect({
+                    message: 'No user found in session',
+                    error: 'Unauthorized',
+                    statusCode: 401
+                  });
+
+                await agent
+                  .get('/profile')
+                  .set('Accept', 'application/json')
+                  .expect(401)
+                  .expect('Content-Type', /json/);
+              });
             });
           });
         });
