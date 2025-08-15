@@ -5,7 +5,7 @@ import type {
   DefaultSession,
   DefaultUser,
   Session,
-  User
+  User,
 } from '@auth/core/types';
 // noinspection ES6PreferShortImport
 import {
@@ -13,7 +13,7 @@ import {
   IS_PUBLIC_KEY,
   Public,
   REQUIRED_ROLES_KEY,
-  RequireRoles
+  RequireRoles,
 } from '../src/auth.decorators.js';
 
 declare module '@auth/core/types' {
@@ -50,7 +50,7 @@ describe('Auth Decorators', () => {
       // Get the metadata using the exported symbol key
       const metadata = reflector.get(
         IS_PUBLIC_KEY,
-        TestController.prototype.publicMethod
+        TestController.prototype.publicMethod,
       );
 
       expect(metadata).toBe(true);
@@ -68,7 +68,7 @@ describe('Auth Decorators', () => {
 
       const metadata = reflector.get(
         REQUIRED_ROLES_KEY,
-        TestController.prototype.protectedMethod
+        TestController.prototype.protectedMethod,
       );
 
       expect(metadata).toEqual(testRoles);
@@ -82,7 +82,7 @@ describe('Auth Decorators', () => {
 
       const metadata = reflector.get(
         REQUIRED_ROLES_KEY,
-        TestController.prototype.adminOnlyMethod
+        TestController.prototype.adminOnlyMethod,
       );
 
       expect(metadata).toEqual(['admin']);
@@ -96,7 +96,7 @@ describe('Auth Decorators', () => {
 
       const metadata = reflector.get(
         REQUIRED_ROLES_KEY,
-        TestController.prototype.noRolesMethod
+        TestController.prototype.noRolesMethod,
       );
 
       expect(metadata).toEqual([]);
@@ -106,7 +106,7 @@ describe('Auth Decorators', () => {
   describe('AuthSession decorator logic', () => {
     const createSessionExtractor = (
       data: unknown,
-      ctx: ExecutionContext
+      ctx: ExecutionContext,
     ): Session | null => {
       const request = ctx
         .switchToHttp()
@@ -117,14 +117,14 @@ describe('Auth Decorators', () => {
     test('should extract session from request', () => {
       const mockSession: Session = {
         user: { id: '123', email: 'test@example.com' },
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       };
 
       const mockRequest = { session: mockSession };
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);
@@ -136,8 +136,8 @@ describe('Auth Decorators', () => {
       const mockRequest = {};
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);
@@ -149,8 +149,8 @@ describe('Auth Decorators', () => {
       const mockRequest = { session: undefined };
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);
@@ -163,19 +163,19 @@ describe('Auth Decorators', () => {
         id: '123',
         email: 'test@example.com',
         name: 'Test User',
-        roles: ['admin', 'user']
+        roles: ['admin', 'user'],
       };
 
       const mockSession: Session = {
         user: mockUser,
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       };
 
       const mockRequest = { session: mockSession };
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);
@@ -188,7 +188,7 @@ describe('Auth Decorators', () => {
   describe('Integration scenarios', () => {
     const createSessionExtractor = (
       data: unknown,
-      ctx: ExecutionContext
+      ctx: ExecutionContext,
     ): Session | null => {
       const request = ctx
         .switchToHttp()
@@ -204,20 +204,20 @@ describe('Auth Decorators', () => {
         roles: ['admin', 'user'],
         profile: {
           avatar: 'https://example.com/avatar.jpg',
-          preferences: { theme: 'dark' }
-        }
+          preferences: { theme: 'dark' },
+        },
       };
 
       const mockSession: Session = {
         user: complexUser,
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       };
 
       const mockRequest = { session: mockSession };
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);
@@ -231,19 +231,19 @@ describe('Auth Decorators', () => {
       const mockUser: User = {
         id: '123',
         email: 'test@example.com',
-        roles: ['user']
+        roles: ['user'],
       };
 
       const mockSession: Session = {
         user: mockUser,
-        expires: '2024-12-31'
+        expires: '2024-12-31',
       };
 
       const mockRequest = { session: mockSession };
       const mockContext: ExecutionContext = {
         switchToHttp: () => ({
-          getRequest: () => mockRequest
-        })
+          getRequest: () => mockRequest,
+        }),
       } as ExecutionContext;
 
       const result = createSessionExtractor(undefined, mockContext);

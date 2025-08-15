@@ -40,7 +40,7 @@ function assertRedirectTo(res: Response, pathname: string): void {
 function assertCookie(
   res: Response,
   name: string,
-  opts: CookieOpts = {}
+  opts: CookieOpts = {},
 ): void {
   const headers = (res.headers ?? {}) as Record<
     string,
@@ -52,7 +52,7 @@ function assertCookie(
     throw new Error('expected Set-Cookie header');
   }
   const cookie = list.find(
-    (c) => typeof c === 'string' && c.startsWith(`${name}=`)
+    (c) => typeof c === 'string' && c.startsWith(`${name}=`),
   );
   if (!cookie) {
     throw new Error(`expected cookie "${name}"`);
@@ -61,7 +61,7 @@ function assertCookie(
     const hasSecure = /;\s*secure\b/i.test(cookie);
     if (hasSecure !== opts.secure) {
       throw new Error(
-        `expected cookie "${name}" Secure=${String(opts.secure)}, got ${String(hasSecure)}`
+        `expected cookie "${name}" Secure=${String(opts.secure)}, got ${String(hasSecure)}`,
       );
     }
   }
@@ -86,7 +86,7 @@ const STCtor: MaybeTestConstructor | undefined = (
 if (STCtor && !('expectRedirectTo' in STCtor.prototype)) {
   STCtor.prototype.expectRedirectTo = function (
     this: STTest,
-    pathname: string
+    pathname: string,
   ): STTest {
     return this.expect((res: Response) => assertRedirectTo(res, pathname));
   };
@@ -95,7 +95,7 @@ if (STCtor && !('expectCookie' in STCtor.prototype)) {
   STCtor.prototype.expectCookie = function (
     this: STTest,
     name: string,
-    options?: CookieOpts
+    options?: CookieOpts,
   ): STTest {
     return this.expect((res: Response) => assertCookie(res, name, options));
   };

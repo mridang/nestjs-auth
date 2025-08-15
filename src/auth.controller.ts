@@ -3,7 +3,7 @@ import { AuthMiddleware } from './auth.middleware.js';
 import { Public } from './auth.decorators.js';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -30,7 +30,7 @@ export class AuthController {
   async handleAuthRoutes(
     @Req() req: ExpressRequest | FastifyRequest,
     @Res() res: ExpressResponse | FastifyReply,
-    @Next() next: () => void
+    @Next() next: () => void,
   ): Promise<void> {
     return this.authMiddleware.use(req, res, next);
   }

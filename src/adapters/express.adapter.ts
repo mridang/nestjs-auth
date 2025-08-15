@@ -1,7 +1,7 @@
 import type { ExecutionContext } from '@nestjs/common';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import { HttpAdapter } from './http.adapter.js';
 import type { AuthenticatedRequest } from '../types.js';
@@ -41,7 +41,7 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   getHeaders(
-    request: ExpressRequest
+    request: ExpressRequest,
   ): Record<string, string | string[] | undefined> {
     return request.headers;
   }
@@ -57,7 +57,7 @@ export class ExpressAdapter extends HttpAdapter<
   setHeader(
     response: ExpressResponse,
     name: string,
-    value: string | string[]
+    value: string | string[],
   ): void {
     response.setHeader(name, value);
   }

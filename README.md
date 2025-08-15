@@ -72,13 +72,13 @@ import GoogleProvider from '@auth/core/providers/google';
       providers: [
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET
-        })
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        }),
       ],
       secret: process.env.AUTH_SECRET,
-      trustHost: true
-    })
-  ]
+      trustHost: true,
+    }),
+  ],
 })
 export class AppModule {}
 ```
@@ -116,7 +116,7 @@ export class ApiController {
   getProfile(@AuthSession() session: Session | null) {
     return {
       user: session?.user,
-      expires: session?.expires
+      expires: session?.expires,
     };
   }
 
@@ -150,18 +150,18 @@ import GitHubProvider from '@auth/core/providers/github';
           providers: [
             GoogleProvider({
               clientId: configService.get('GOOGLE_CLIENT_ID'),
-              clientSecret: configService.get('GOOGLE_CLIENT_SECRET')
+              clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
             }),
             GitHubProvider({
               clientId: configService.get('GITHUB_CLIENT_ID'),
-              clientSecret: configService.get('GITHUB_CLIENT_SECRET')
-            })
+              clientSecret: configService.get('GITHUB_CLIENT_SECRET'),
+            }),
           ],
           secret: configService.get('AUTH_SECRET'),
           trustHost: true,
           session: {
             strategy: 'jwt',
-            maxAge: 30 * 24 * 60 * 60 // 30 days
+            maxAge: 30 * 24 * 60 * 60, // 30 days
           },
           callbacks: {
             jwt: async ({ token, user }) => {
@@ -173,18 +173,18 @@ import GitHubProvider from '@auth/core/providers/github';
             session: async ({ session, token }) => {
               session.user.roles = token.roles as string[];
               return session;
-            }
-          }
+            },
+          },
         }),
-        inject: [ConfigService]
+        inject: [ConfigService],
       },
       {
         globalGuard: true, // Require auth by default
         rolesGuard: true, // Enable role-based access
-        basePath: '/auth' // Auth routes base path
-      }
-    )
-  ]
+        basePath: '/auth', // Auth routes base path
+      },
+    ),
+  ],
 })
 export class AppModule {}
 ```

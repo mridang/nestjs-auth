@@ -14,7 +14,7 @@ describe('FastifyAdapter', () => {
   test('getRequest() should extract AuthenticatedRequest from context', () => {
     const fakeReq = { user: { id: 'u2' } } as unknown as AuthenticatedRequest;
     const context = {
-      switchToHttp: () => ({ getRequest: () => fakeReq })
+      switchToHttp: () => ({ getRequest: () => fakeReq }),
     } as unknown as ExecutionContext;
 
     const result = adapter.getRequest(context);
@@ -23,10 +23,10 @@ describe('FastifyAdapter', () => {
 
   test('getResponse() should extract FastifyReply from context', () => {
     const fakeRes = {
-      send: () => {}
+      send: () => {},
     } as unknown as FastifyReply;
     const context = {
-      switchToHttp: () => ({ getResponse: () => fakeRes })
+      switchToHttp: () => ({ getResponse: () => fakeRes }),
     } as unknown as ExecutionContext;
 
     const result = adapter.getResponse(context);
@@ -61,7 +61,7 @@ describe('FastifyAdapter', () => {
 
   test('getCookie() should return request.headers.cookie', () => {
     const reqWithCookie = {
-      headers: { cookie: 'tok=abc' }
+      headers: { cookie: 'tok=abc' },
     } as unknown as FastifyRequest;
     expect(adapter.getCookie(reqWithCookie)).toBe('tok=abc');
 
@@ -83,7 +83,7 @@ describe('FastifyAdapter', () => {
         nameCaptured = n;
         valueCaptured = v;
         return res;
-      }
+      },
     } as unknown as FastifyReply;
 
     adapter.setHeader(res, 'X-Foo', 'bar');
@@ -97,7 +97,7 @@ describe('FastifyAdapter', () => {
       status: (code: number) => {
         statusCaptured = code;
         return res;
-      }
+      },
     } as unknown as FastifyReply;
 
     adapter.setStatus(res, 404);
@@ -110,7 +110,7 @@ describe('FastifyAdapter', () => {
       send: (body: string) => {
         bodyCaptured = body;
         return res;
-      }
+      },
     } as unknown as FastifyReply;
 
     adapter.send(res, 'bye');

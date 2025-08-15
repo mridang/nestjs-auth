@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import type { FastifyRequest } from 'fastify';
 // noinspection ES6PreferShortImport
@@ -9,7 +9,7 @@ import { toHttpResponse, toWebRequest } from '../src/utils/http-adapters.js';
 import { HttpAdapter } from '../src/adapters/http.adapter.js';
 
 function readBodyToString(
-  body: string | Buffer | Readable | undefined
+  body: string | Buffer | Readable | undefined,
 ): Promise<string> {
   if (typeof body === 'string') return Promise.resolve(body);
   if (Buffer.isBuffer(body)) return Promise.resolve(body.toString('utf8'));
@@ -29,7 +29,7 @@ function readBodyToString(
 describe('Framework Agnostic HTTP Conversion', () => {
   const frameworks = [
     { name: 'ExpressRequest', rawReq: {} as ExpressRequest },
-    { name: 'FastifyRequest', rawReq: {} as FastifyRequest }
+    { name: 'FastifyRequest', rawReq: {} as FastifyRequest },
   ];
 
   describe('toWebRequest', () => {
@@ -44,14 +44,14 @@ describe('Framework Agnostic HTTP Conversion', () => {
             getHeaders: () => ({
               'content-type': 'application/json',
               'x-array': ['first', '', 'second'],
-              'x-single': undefined
+              'x-single': undefined,
             }),
-            getBody: () => null
+            getBody: () => null,
           };
 
           const req = toWebRequest(
             rawReq,
-            adapter as HttpAdapter<unknown, unknown>
+            adapter as HttpAdapter<unknown, unknown>,
           );
 
           expect(req.url).toBe('https://example.com/test');
@@ -70,12 +70,12 @@ describe('Framework Agnostic HTTP Conversion', () => {
             getUrl: () => '/json',
             getMethod: () => 'POST',
             getHeaders: () => ({ 'content-type': 'application/json' }),
-            getBody: () => body
+            getBody: () => body,
           };
 
           const req = toWebRequest(
             rawReq,
-            adapter as HttpAdapter<unknown, unknown>
+            adapter as HttpAdapter<unknown, unknown>,
           );
 
           expect(req.method).toBe('POST');
@@ -90,14 +90,14 @@ describe('Framework Agnostic HTTP Conversion', () => {
             getUrl: () => '/form',
             getMethod: () => 'PUT',
             getHeaders: () => ({
-              'content-type': 'application/x-www-form-urlencoded'
+              'content-type': 'application/x-www-form-urlencoded',
             }),
-            getBody: () => body
+            getBody: () => body,
           };
 
           const req = toWebRequest(
             rawReq,
-            adapter as HttpAdapter<unknown, unknown>
+            adapter as HttpAdapter<unknown, unknown>,
           );
 
           expect(await req.text()).toBe('alpha=one&beta=two');
@@ -110,12 +110,12 @@ describe('Framework Agnostic HTTP Conversion', () => {
             getUrl: () => '/text',
             getMethod: () => 'PATCH',
             getHeaders: () => ({ 'content-type': 'text/plain' }),
-            getBody: () => 'plain text body'
+            getBody: () => 'plain text body',
           };
 
           const req = toWebRequest(
             rawReq,
-            adapter as HttpAdapter<unknown, unknown>
+            adapter as HttpAdapter<unknown, unknown>,
           );
 
           expect(await req.text()).toBe('plain text body');
@@ -129,12 +129,12 @@ describe('Framework Agnostic HTTP Conversion', () => {
             getUrl: () => '/buffer',
             getMethod: () => 'DELETE',
             getHeaders: () => ({}),
-            getBody: () => buffer
+            getBody: () => buffer,
           };
 
           const req = toWebRequest(
             rawReq,
-            adapter as HttpAdapter<unknown, unknown>
+            adapter as HttpAdapter<unknown, unknown>,
           );
           const result = await req.arrayBuffer();
 
@@ -155,22 +155,22 @@ describe('Framework Agnostic HTTP Conversion', () => {
       const adapter: Partial<HttpAdapter<unknown, unknown>> = {
         setHeader: (_res, key, value) => (captured.headers[key] = value),
         setStatus: (_res, code) => (captured.status = code),
-        send: (_res, body) => (captured.body = body)
+        send: (_res, body) => (captured.body = body),
       };
 
       const webResponse = new Response('OK', {
         status: 201,
         headers: {
           'Content-Type': 'text/plain',
-          'Set-Cookie': 'A=1; Path=/; HttpOnly'
-        }
+          'Set-Cookie': 'A=1; Path=/; HttpOnly',
+        },
       });
       webResponse.headers.append('Set-Cookie', 'B=2; Path=/; Secure');
 
       await toHttpResponse(
         webResponse,
         {} as ExpressResponse,
-        adapter as HttpAdapter<unknown, unknown>
+        adapter as HttpAdapter<unknown, unknown>,
       );
 
       const bodyText = await readBodyToString(captured.body);
@@ -180,7 +180,7 @@ describe('Framework Agnostic HTTP Conversion', () => {
       expect(captured.headers['content-type']).toBe('text/plain');
       expect(captured.headers['set-cookie']).toEqual([
         'A=1; Path=/; HttpOnly',
-        'B=2; Path=/; Secure'
+        'B=2; Path=/; Secure',
       ]);
     });
   });

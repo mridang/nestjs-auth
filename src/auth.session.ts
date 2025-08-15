@@ -39,7 +39,7 @@ export class AuthSession implements Session {
       copyExtraProps(
         srcUser,
         mergedUser,
-        new Set<PropertyKey>(['name', 'email', 'image'])
+        new Set<PropertyKey>(['name', 'email', 'image']),
       );
       this.user = mergedUser as unknown as AuthUser;
     } else {
@@ -97,7 +97,7 @@ function toRecord(value: unknown): Record<PropertyKey, unknown> | null {
 function copyExtraProps(
   source: object,
   target: object,
-  exclude: ReadonlySet<PropertyKey>
+  exclude: ReadonlySet<PropertyKey>,
 ): void {
   const sDesc = Object.getOwnPropertyDescriptors(source);
   for (const key of Reflect.ownKeys(sDesc)) {

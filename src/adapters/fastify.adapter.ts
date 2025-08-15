@@ -35,7 +35,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyRequest, FastifyReply> {
   }
 
   getHeaders(
-    request: FastifyRequest
+    request: FastifyRequest,
   ): Record<string, string | string[] | undefined> {
     return request.headers;
   }
@@ -51,7 +51,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyRequest, FastifyReply> {
   setHeader(
     response: FastifyReply,
     name: string,
-    value: string | string[]
+    value: string | string[],
   ): void {
     response.header(name, value);
   }

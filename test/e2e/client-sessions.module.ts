@@ -39,8 +39,8 @@ export class ClientSessionsModule {
             createKeycloakProvider({
               issuer: oauthIssuer,
               clientId: 'client1',
-              clientSecret: 'secret1'
-            })
+              clientSecret: 'secret1',
+            }),
           ],
           callbacks: {
             /**
@@ -144,11 +144,11 @@ export class ClientSessionsModule {
                 // no reassignment of session.user
               }
               return session;
-            }
-          }
-        })
+            },
+          },
+        }),
       ],
-      controllers: [E2EController]
+      controllers: [E2EController],
     };
   }
 }

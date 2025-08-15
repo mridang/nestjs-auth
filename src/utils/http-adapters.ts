@@ -1,7 +1,7 @@
 import { HttpAdapter } from '../adapters/http.adapter.js';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import qs from 'qs';
@@ -16,7 +16,7 @@ type RequestBody = string | Buffer;
  */
 export function toWebRequest(
   request: FastifyRequest | ExpressRequest,
-  adapter: HttpAdapter<unknown, unknown>
+  adapter: HttpAdapter<unknown, unknown>,
 ): Request {
   const protocol = adapter.getProtocol(request);
   const host = adapter.getHost(request);
@@ -47,7 +47,7 @@ export function toWebRequest(
     if (rawBody !== undefined && rawBody !== null) {
       if (contentType?.includes('application/x-www-form-urlencoded')) {
         body = qs.stringify(rawBody as Record<string, unknown>, {
-          arrayFormat: 'repeat'
+          arrayFormat: 'repeat',
         });
       } else if (contentType?.includes('application/json')) {
         body = JSON.stringify(rawBody);
@@ -58,7 +58,7 @@ export function toWebRequest(
       } else if (typeof rawBody === 'object') {
         // Fallback for object bodies without a proper content-type.
         body = qs.stringify(rawBody as Record<string, unknown>, {
-          arrayFormat: 'repeat'
+          arrayFormat: 'repeat',
         });
       }
     }
@@ -67,7 +67,7 @@ export function toWebRequest(
   return new Request(url, {
     method,
     headers,
-    body
+    body,
   });
 }
 
@@ -77,7 +77,7 @@ export function toWebRequest(
 export async function toHttpResponse(
   webResponse: Response,
   res: FastifyReply | ExpressResponse,
-  adapter: HttpAdapter<unknown, unknown>
+  adapter: HttpAdapter<unknown, unknown>,
 ): Promise<void> {
   // Build headers without using Headers.entries() to avoid dom.iterable dependency issues.
   const groupedHeaders: Record<string, string | string[]> = {};
@@ -120,7 +120,7 @@ export async function toHttpResponse(
         } finally {
           reader.releaseLock();
         }
-      })()
+      })(),
     );
 
     adapter.send(res, nodeStream);

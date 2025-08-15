@@ -53,14 +53,14 @@ export class ServerSessionsModule {
           adapter: adapter,
           session: {
             strategy: 'database',
-            maxAge: 30 * 24 * 60 * 60
+            maxAge: 30 * 24 * 60 * 60,
           },
           providers: [
             createKeycloakProvider({
               issuer: oauthIssuer,
               clientId: 'client1',
-              clientSecret: 'secret1'
-            })
+              clientSecret: 'secret1',
+            }),
           ],
           callbacks: {
             async session({ session, user }) {
@@ -70,15 +70,15 @@ export class ServerSessionsModule {
                   id: user.customId,
                   email: user.email,
                   name: user.name,
-                  roles: user.roles
+                  roles: user.roles,
                 };
               }
               return session;
-            }
-          }
-        })
+            },
+          },
+        }),
       ],
-      controllers: [E2EController]
+      controllers: [E2EController],
     };
   }
 }

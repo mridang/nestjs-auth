@@ -36,7 +36,7 @@ export class E2EController {
     return {
       hasSession: !!session,
       user: session?.user || null,
-      message: 'Session info (public)'
+      message: 'Session info (public)',
     };
   }
 
@@ -46,7 +46,7 @@ export class E2EController {
     return {
       user: session.user,
       expires: session.expires,
-      message: 'Profile data'
+      message: 'Profile data',
     };
   }
 
@@ -56,7 +56,7 @@ export class E2EController {
     return {
       user: session?.user,
       message: 'User settings page',
-      userAccess: true
+      userAccess: true,
     };
   }
 
@@ -66,7 +66,7 @@ export class E2EController {
     return {
       user: session?.user,
       message: 'Welcome to the admin dashboard',
-      adminOnly: true
+      adminOnly: true,
     };
   }
 
@@ -76,7 +76,7 @@ export class E2EController {
     return {
       user: session?.user,
       message: 'Staff only area',
-      staffAccess: true
+      staffAccess: true,
     };
   }
 

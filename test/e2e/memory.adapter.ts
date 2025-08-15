@@ -3,7 +3,7 @@ import type {
   AdapterAccount,
   AdapterSession,
   AdapterUser,
-  VerificationToken
+  VerificationToken,
 } from '@auth/core/adapters';
 import { randomUUID } from 'crypto';
 
@@ -39,7 +39,7 @@ export function MemoryAdapter(): Adapter {
         ...(user as AdapterUser),
         id,
         emailVerified: user.emailVerified ?? null,
-        roles: (user as UserWithRoles).roles ?? []
+        roles: (user as UserWithRoles).roles ?? [],
       };
 
       users.set(id, newUser);
@@ -104,7 +104,7 @@ export function MemoryAdapter(): Adapter {
      * @returns The updated user.
      */
     async updateUser(
-      data: Partial<AdapterUser> & Pick<AdapterUser, 'id'>
+      data: Partial<AdapterUser> & Pick<AdapterUser, 'id'>,
     ): Promise<AdapterUser> {
       const user = users.get(data.id);
 
@@ -152,7 +152,7 @@ export function MemoryAdapter(): Adapter {
      * @returns The unlinked account if found, otherwise undefined.
      */
     async unlinkAccount(
-      account: Pick<AdapterAccount, 'provider' | 'providerAccountId'>
+      account: Pick<AdapterAccount, 'provider' | 'providerAccountId'>,
     ): Promise<AdapterAccount | undefined> {
       for (const [key, value] of accounts.entries()) {
         if (
@@ -183,7 +183,7 @@ export function MemoryAdapter(): Adapter {
      * @returns The session and user, or null if not found.
      */
     async getSessionAndUser(
-      sessionToken: string
+      sessionToken: string,
     ): Promise<{ session: AdapterSession; user: AdapterUser } | null> {
       const session = sessions.get(sessionToken);
 
@@ -206,7 +206,7 @@ export function MemoryAdapter(): Adapter {
      * @returns The updated session or null if not found.
      */
     async updateSession(
-      data: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>
+      data: Partial<AdapterSession> & Pick<AdapterSession, 'sessionToken'>,
     ): Promise<AdapterSession | null> {
       const existing = sessions.get(data.sessionToken);
 
@@ -241,7 +241,7 @@ export function MemoryAdapter(): Adapter {
      * @returns The created verification token.
      */
     async createVerificationToken(
-      verificationToken: VerificationToken
+      verificationToken: VerificationToken,
     ): Promise<VerificationToken> {
       const key = `${verificationToken.identifier}:${verificationToken.token}`;
       verificationTokens.set(key, verificationToken);
@@ -276,7 +276,7 @@ export function MemoryAdapter(): Adapter {
      */
     async getAccount(
       providerAccountId: string,
-      provider: string
+      provider: string,
     ): Promise<AdapterAccount | null> {
       const key = `${provider}:${providerAccountId}`;
       const account = accounts.get(key);
@@ -286,6 +286,6 @@ export function MemoryAdapter(): Adapter {
       } else {
         return null;
       }
-    }
+    },
   };
 }

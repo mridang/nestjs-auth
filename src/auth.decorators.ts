@@ -1,7 +1,7 @@
 import {
   createParamDecorator,
   ExecutionContext,
-  SetMetadata
+  SetMetadata,
 } from '@nestjs/common';
 import type { Session } from './types.js';
 import { AuthSession as AuthSessionClass } from './auth.session.js';
@@ -120,8 +120,8 @@ export const AuthSession = createParamDecorator(
       .getRequest<unknown & { session?: unknown }>();
     return (
       AuthSessionClass.fromCore(
-        request.session as unknown as import('@auth/core/types').Session | null
+        request.session as unknown as import('@auth/core/types').Session | null,
       )?.toJSON() ?? null
     );
-  }
+  },
 );

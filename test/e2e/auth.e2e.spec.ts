@@ -50,20 +50,20 @@ const TEST_USERS: Record<'admin' | 'user', TestUser> = {
     name: 'Admin User',
     email: 'admin@example.com',
     roles: ['admin', 'user'],
-    password: 'password'
+    password: 'password',
   },
   user: {
     id: '2',
     name: 'Regular User',
     email: 'user@example.com',
     roles: ['user'],
-    password: 'password'
-  }
+    password: 'password',
+  },
 };
 
 beforeAll(async () => {
   container = await new GenericContainer(
-    'ghcr.io/navikt/mock-oauth2-server:2.1.10'
+    'ghcr.io/navikt/mock-oauth2-server:2.1.10',
   )
     .withExposedPorts(8080)
     .withWaitStrategy(Wait.forHttp('/', 8080).forStatusCode(405))
@@ -84,31 +84,31 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
       label: 'Credentials provider',
       authenticate: async (
         agent: ReturnType<typeof request.agent>,
-        who: TestUser
+        who: TestUser,
       ): Promise<void> => {
         await authenticateCredentials(agent, who);
-      }
+      },
     },
     {
       label: 'Keycloak provider',
       authenticate: async (
         agent: ReturnType<typeof request.agent>,
-        who: TestUser
+        who: TestUser,
       ): Promise<void> => {
         await authenticateOidc(appRef!, agent, who);
-      }
-    }
+      },
+    },
   ].forEach(({ label: providerLabel, authenticate: authFn }) => {
     describe(providerLabel, () => {
       [
         {
           label: 'Insecure cookies (HTTP)',
-          useSecureCookies: false
+          useSecureCookies: false,
         },
         {
           label: 'Secure cookies (HTTPS)',
-          useSecureCookies: true
-        }
+          useSecureCookies: true,
+        },
       ].forEach(({ label: cookieLabel, useSecureCookies }) => {
         describe(cookieLabel, () => {
           let originalEnv: string | undefined;
@@ -122,9 +122,9 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                 ClientSessionsModule.register({
                   useSecureCookies: useSecureCookies,
                   oauthIssuer: `${oauthHost}/default`,
-                  users: TEST_USERS
-                })
-              ]
+                  users: TEST_USERS,
+                }),
+              ],
             }).compile();
 
             appRef = moduleRef.createNestApplication();
@@ -158,13 +158,13 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
               expect.objectContaining({
                 credentials: expect.objectContaining({
                   id: 'credentials',
-                  type: 'credentials'
+                  type: 'credentials',
                 }),
                 keycloak: expect.objectContaining({
                   id: 'keycloak',
-                  type: 'oidc'
-                })
-              })
+                  type: 'oidc',
+                }),
+              }),
             );
           });
 
@@ -195,7 +195,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
               expectedUser: null as
                 | null
                 | (typeof TEST_USERS)['user']
-                | (typeof TEST_USERS)['admin']
+                | (typeof TEST_USERS)['admin'],
             },
             {
               label: 'Authenticated as Regular User' as const,
@@ -205,7 +205,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                 await authFn(agent, TEST_USERS.user);
                 return agent;
               },
-              expectedUser: TEST_USERS.user
+              expectedUser: TEST_USERS.user,
             },
             {
               label: 'Authenticated as Admin' as const,
@@ -215,8 +215,8 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                 await authFn(agent, TEST_USERS.admin);
                 return agent;
               },
-              expectedUser: TEST_USERS.admin
-            }
+              expectedUser: TEST_USERS.admin,
+            },
           ].forEach(({ label: scenarioLabel, actor, setup, expectedUser }) => {
             describe(scenarioLabel, () => {
               let agent: ReturnType<typeof request.agent>;
@@ -234,7 +234,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                     { path: '/admin/dashboard', expectedStatus: 401 },
                     { path: '/staff/area', expectedStatus: 401 },
                     { path: '/auth/session', expectedStatus: 200 },
-                    { path: '/auth/login', expectedStatus: 200 }
+                    { path: '/auth/login', expectedStatus: 200 },
                   ]
                 : actor === 'user'
                   ? [
@@ -245,7 +245,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                       { path: '/admin/dashboard', expectedStatus: 403 },
                       { path: '/staff/area', expectedStatus: 403 },
                       { path: '/auth/session', expectedStatus: 200 },
-                      { path: '/auth/login', expectedStatus: 200 }
+                      { path: '/auth/login', expectedStatus: 200 },
                     ]
                   : [
                       { path: '/public', expectedStatus: 200 },
@@ -255,7 +255,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                       { path: '/admin/dashboard', expectedStatus: 200 },
                       { path: '/staff/area', expectedStatus: 200 },
                       { path: '/auth/session', expectedStatus: 200 },
-                      { path: '/auth/login', expectedStatus: 200 }
+                      { path: '/auth/login', expectedStatus: 200 },
                     ]
               ).forEach(({ path, expectedStatus }) => {
                 test(`${path} → ${expectedStatus}`, async () => {
@@ -281,7 +281,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                     id: expectedUser.id,
                     email: expectedUser.email,
                     roles: expectedUser.roles,
-                    name: expectedUser.name
+                    name: expectedUser.name,
                   });
                 }
               });
@@ -301,7 +301,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                     id: expectedUser.id,
                     email: expectedUser.email,
                     roles: expectedUser.roles,
-                    name: expectedUser.name
+                    name: expectedUser.name,
                   });
                 }
               });
@@ -313,12 +313,12 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                   .get('/profile')
                   .set(
                     'Accept',
-                    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                   )
                   .expect(302);
 
                 expect(browserRes.headers.location).toBe(
-                  '/auth/signin?callbackUrl=%2Fprofile'
+                  '/auth/signin?callbackUrl=%2Fprofile',
                 );
               });
 
@@ -332,7 +332,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
                   .expect({
                     message: 'No user found in session',
                     error: 'Unauthorized',
-                    statusCode: 401
+                    statusCode: 401,
                   });
 
                 await agent

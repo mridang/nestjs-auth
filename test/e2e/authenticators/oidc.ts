@@ -11,7 +11,7 @@ import type { TestUser } from '../client-sessions.module.js';
 type HttpServerWithAddress = { address(): string | AddressInfo | null };
 
 function asHeaderMap(
-  headers: unknown
+  headers: unknown,
 ): Record<string, string | string[] | undefined> {
   return (headers ?? {}) as Record<string, string | string[] | undefined>;
 }
@@ -19,7 +19,7 @@ function asHeaderMap(
 export async function authenticateOidc(
   app: INestApplication,
   agent: ReturnType<typeof request.agent>,
-  who: TestUser
+  who: TestUser,
 ): Promise<void> {
   const srv = app.getHttpServer() as HttpServerWithAddress;
   const addr = srv.address();
@@ -65,15 +65,15 @@ export async function authenticateOidc(
         name: who.name,
         email: who.email,
         roles: who.roles,
-        realm_access: { roles: who.roles }
-      })
+        realm_access: { roles: who.roles },
+      }),
     });
 
     res = await fetch(res.url, {
       method: 'POST',
       redirect: 'manual',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: loginBody
+      body: loginBody,
     });
   }
 

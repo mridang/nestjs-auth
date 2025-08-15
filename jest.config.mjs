@@ -5,9 +5,9 @@ export default {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: 'tsconfig.jest.json'
-      }
-    ]
+        tsconfig: 'tsconfig.jest.json',
+      },
+    ],
   },
   testEnvironment: 'node',
   testMatch: ['**/*.+(spec|test).[tj]s?(x)'],
@@ -19,7 +19,7 @@ export default {
     'jsx',
     'mts',
     'json',
-    'node'
+    'node',
   ],
   testPathIgnorePatterns: ['/node_modules/', '/frontend/', '/dist/'],
   resetModules: false,
@@ -31,6 +31,6 @@ export default {
   testTimeout: 60000,
   extensionsToTreatAsEsm: ['.ts', '.tsx', '.mts'],
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1'
-  }
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 };

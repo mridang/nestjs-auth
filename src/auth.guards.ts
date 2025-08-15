@@ -6,13 +6,13 @@ import {
   mixin,
   Optional,
   Type,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { HttpAdapterHost, Reflector } from '@nestjs/core';
 import { Auth, createActionURL, setEnvDefaults } from '@auth/core';
 import type {
   Session as CoreSession,
-  User as CoreUser
+  User as CoreUser,
 } from '@auth/core/types';
 import memoize from 'memoize';
 import { HttpAdapter } from './adapters/http.adapter.js';
@@ -29,10 +29,10 @@ export type IAuthGuard = CanActivate & {
     err: Error | null,
     user: TUser | null,
     info: unknown,
-    context: ExecutionContext
+    context: ExecutionContext,
   ): TUser;
   getAuthenticateOptions(
-    context: ExecutionContext
+    context: ExecutionContext,
   ): IAuthModuleOptions | undefined;
   getRequest(context: ExecutionContext): unknown;
 };
@@ -57,7 +57,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
       protected readonly options?: AuthModuleOptions,
       @Optional()
       @Inject(HttpAdapterHost)
-      private readonly adapterHost?: HttpAdapterHost
+      private readonly adapterHost?: HttpAdapterHost,
     ) {
       if (!this.options && !type) {
         authLogger.error(NO_STRATEGY_ERROR);
@@ -80,7 +80,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
 
       const isPublic = this.reflector.getAllAndOverride<boolean>(
         IS_PUBLIC_KEY,
-        [context.getHandler(), context.getClass()]
+        [context.getHandler(), context.getClass()],
       );
 
       if (isPublic) {
@@ -141,7 +141,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      */
     getAuthenticateOptions(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _context: ExecutionContext
+      _context: ExecutionContext,
     ): IAuthModuleOptions | undefined | Promise<IAuthModuleOptions> {
       return undefined;
     }
@@ -154,7 +154,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
       if (!this.httpAdapter) {
         if (!this.adapterHost?.httpAdapter) {
           throw new Error(
-            'No HTTP adapter found. Ensure app.init() is called.'
+            'No HTTP adapter found. Ensure app.init() is called.',
           );
         }
         this.httpAdapter = AdapterFactory.create(this.adapterHost);
@@ -171,19 +171,19 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      * @returns A promise that always resolves to `true`, granting access.
      */
     private async handlePublicRoute(
-      context: ExecutionContext
+      context: ExecutionContext,
     ): Promise<boolean> {
       const request = this.getRequest(context);
       const mergedOptions = {
         providers: [],
         ...defaultOptions,
         ...this.options,
-        ...(await this.getAuthenticateOptions(context))
+        ...(await this.getAuthenticateOptions(context)),
       };
 
       const [coreSession] = await this.getSessionOrError(
         request,
-        mergedOptions
+        mergedOptions,
       );
       const publicSession =
         AuthSessionClass.fromCore(coreSession)?.toJSON() ?? null;
@@ -194,7 +194,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         // keep core session on the request to match AuthenticatedRequest
         session: coreSession,
         // expose user from the mapped public session
-        [property]: publicSession?.user ?? null
+        [property]: publicSession?.user ?? null,
       });
 
       return true;
@@ -210,7 +210,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      * @throws {UnauthorizedException} If authentication fails.
      */
     private async handleProtectedRoute(
-      context: ExecutionContext
+      context: ExecutionContext,
     ): Promise<boolean> {
       const request = this.getRequest(context);
       const response = this.getResponse(context);
@@ -218,12 +218,12 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
         providers: [],
         ...defaultOptions,
         ...this.options,
-        ...(await this.getAuthenticateOptions(context))
+        ...(await this.getAuthenticateOptions(context)),
       };
 
       const [coreSession, error] = await this.getSessionOrError(
         request,
-        mergedOptions
+        mergedOptions,
       );
 
       const publicSession = AuthSessionClass.fromCore(coreSession)?.toJSON();
@@ -251,7 +251,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
 
         Object.assign(request, {
           session: coreSession,
-          [property]: user
+          [property]: user,
         });
 
         return true;
@@ -267,7 +267,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      */
     private async getSessionOrError(
       request: unknown,
-      options: IAuthModuleOptions
+      options: IAuthModuleOptions,
     ): Promise<[CoreSession | null, Error | null]> {
       try {
         const session = await this.getSession(request, options);
@@ -285,7 +285,7 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
      */
     private async getSession(
       request: unknown,
-      options: IAuthModuleOptions
+      options: IAuthModuleOptions,
     ): Promise<CoreSession | null> {
       const adapter = this.getOrCreateAdapter();
       if (!options.providers?.length) {
@@ -306,15 +306,15 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
           host,
           'x-forwarded-host': (headers['x-forwarded-host'] as string) ?? host,
           'x-forwarded-proto':
-            (headers['x-forwarded-proto'] as string) ?? protocol
+            (headers['x-forwarded-proto'] as string) ?? protocol,
         }),
         process.env,
-        options
+        options,
       );
       const cookieHeader = adapter.getCookie(request) ?? '';
       const response = await Auth(
         new Request(url, { headers: { cookie: cookieHeader } }),
-        options
+        options,
       );
       if (!response.ok) {
         return null;
@@ -335,5 +335,5 @@ function createAuthGuard(type?: string | readonly string[]): Type<IAuthGuard> {
  * Exported guard factory using `memoize` from npm
  */
 export const AuthGuard = memoize(createAuthGuard) as (
-  type?: string | readonly string[]
+  type?: string | readonly string[],
 ) => Type<IAuthGuard>;

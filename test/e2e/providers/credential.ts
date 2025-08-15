@@ -46,15 +46,15 @@ export function createCredentialsProvider(users: Record<string, TestUser>) {
     credentials: {
       username: {
         label: 'Username',
-        type: 'text'
+        type: 'text',
       },
       password: {
         label: 'Password',
-        type: 'password'
-      }
+        type: 'password',
+      },
     },
     async authorize(
-      credentials: Partial<Record<string, unknown>>
+      credentials: Partial<Record<string, unknown>>,
     ): Promise<User | null> {
       const c = credentials as { username?: string; password?: string };
 
@@ -70,6 +70,6 @@ export function createCredentialsProvider(users: Record<string, TestUser>) {
           return null;
         }
       }
-    }
+    },
   });
 }

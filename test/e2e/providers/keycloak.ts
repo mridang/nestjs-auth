@@ -48,8 +48,8 @@ export function createKeycloakProvider(config: KeycloakConfig) {
         customId: profile.preferred_username,
         name: profile.name,
         email: profile.email,
-        roles: profile.roles
+        roles: profile.roles,
       };
-    }
+    },
   });
 }

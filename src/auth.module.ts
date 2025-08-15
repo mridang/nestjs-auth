@@ -4,7 +4,7 @@ import { AuthModuleOptions } from './auth-module.options.js';
 import type {
   AuthModuleAsyncOptions,
   AuthOptionsFactory,
-  IAuthModuleOptions
+  IAuthModuleOptions,
 } from './auth-module.options.js';
 import { AuthMiddleware } from './auth.middleware.js';
 import { AuthGuard } from './auth.guards.js';
@@ -122,13 +122,13 @@ export class AuthModule {
    */
   static register(
     options: IAuthModuleOptions,
-    config: AuthModuleConfig = {}
+    config: AuthModuleConfig = {},
   ): DynamicModule {
     return this.registerAsync(
       {
-        useFactory: () => options
+        useFactory: () => options,
       },
-      config
+      config,
     );
   }
 
@@ -141,7 +141,7 @@ export class AuthModule {
    */
   static registerAsync(
     options: AuthModuleAsyncOptions,
-    config: AuthModuleConfig = {}
+    config: AuthModuleConfig = {},
   ): DynamicModule {
     const asyncProviders = this.createAsyncProviders(options);
     const guardProviders = this.createGuardProviders(config);
@@ -151,7 +151,7 @@ export class AuthModule {
       imports: options.imports ?? [],
       controllers: [AuthController],
       providers: [...asyncProviders, ...guardProviders],
-      exports: [AuthModuleOptions]
+      exports: [AuthModuleOptions],
     };
   }
 
@@ -165,7 +165,7 @@ export class AuthModule {
     if (config.globalGuard !== false) {
       providers.push({
         provide: APP_GUARD,
-        useClass: AuthGuard()
+        useClass: AuthGuard(),
       });
     }
 
@@ -173,7 +173,7 @@ export class AuthModule {
     if (config.rolesGuard !== false) {
       providers.push({
         provide: APP_GUARD,
-        useClass: RolesGuard
+        useClass: RolesGuard,
       });
     }
 
@@ -184,7 +184,7 @@ export class AuthModule {
    * Creates providers for async registration
    */
   private static createAsyncProviders(
-    options: AuthModuleAsyncOptions
+    options: AuthModuleAsyncOptions,
   ): readonly Provider[] {
     const baseProviders: Provider[] = [AuthMiddleware];
 
@@ -194,7 +194,7 @@ export class AuthModule {
 
     if (!options.useClass) {
       throw new Error(
-        'Invalid Auth.js module async options. Must provide one of: useFactory, useClass, or useExisting'
+        'Invalid Auth.js module async options. Must provide one of: useFactory, useClass, or useExisting',
       );
     }
 
@@ -203,8 +203,8 @@ export class AuthModule {
       this.createAsyncOptionsProvider(options),
       {
         provide: options.useClass,
-        useClass: options.useClass
-      }
+        useClass: options.useClass,
+      },
     ];
   }
 
@@ -212,20 +212,20 @@ export class AuthModule {
    * Creates the option provider for async configuration
    */
   private static createAsyncOptionsProvider(
-    options: AuthModuleAsyncOptions
+    options: AuthModuleAsyncOptions,
   ): Provider {
     if (options.useFactory) {
       return {
         provide: AuthModuleOptions,
         useFactory: options.useFactory,
-        inject: [...(options.inject ?? [])]
+        inject: [...(options.inject ?? [])],
       };
     }
 
     const inject = options.useExisting ?? options.useClass;
     if (!inject) {
       throw new Error(
-        'Invalid Auth.js module async options. useClass or useExisting must be provided'
+        'Invalid Auth.js module async options. useClass or useExisting must be provided',
       );
     }
 
@@ -233,7 +233,7 @@ export class AuthModule {
       provide: AuthModuleOptions,
       useFactory: async (optionsFactory: AuthOptionsFactory) =>
         await optionsFactory.createAuthOptions(),
-      inject: [inject]
+      inject: [inject],
     };
   }
 }

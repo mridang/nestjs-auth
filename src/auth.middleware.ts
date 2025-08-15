@@ -8,7 +8,7 @@ import { AuthModuleOptions } from './auth-module.options.js';
 import type { IAuthModuleOptions } from './auth-module.options.js';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -25,13 +25,13 @@ export class AuthMiddleware implements NestMiddleware {
     @Inject(AuthModuleOptions)
     private readonly options: IAuthModuleOptions,
     @Inject(HttpAdapterHost)
-    private readonly adapterHost: HttpAdapterHost
+    private readonly adapterHost: HttpAdapterHost,
   ) {}
 
   async use(
     req: FastifyRequest | ExpressRequest,
     res: FastifyReply | ExpressResponse,
-    next: (error?: unknown) => void
+    next: (error?: unknown) => void,
   ): Promise<void> {
     if (!this.httpAdapter) {
       this.httpAdapter = AdapterFactory.create(this.adapterHost);

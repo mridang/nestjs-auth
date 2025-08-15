@@ -9,7 +9,7 @@ import type {
   ErrorRequestHandler,
   NextFunction,
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import express from 'express';
 
@@ -38,7 +38,7 @@ describe('AuthMiddleware (CSRF disabled, no mocks)', () => {
         type: 'credentials',
         credentials: {
           username: { label: 'Username', type: 'text' },
-          password: { label: 'Password', type: 'password' }
+          password: { label: 'Password', type: 'password' },
         },
         async authorize(credentials) {
           if (
@@ -48,14 +48,14 @@ describe('AuthMiddleware (CSRF disabled, no mocks)', () => {
             return { id: '1', name: 'Test User', email: 'test@example.com' };
           }
           return null;
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AuthModule.register(mockAuthConfig)]
+      imports: [AuthModule.register(mockAuthConfig)],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -74,23 +74,23 @@ describe('AuthMiddleware (CSRF disabled, no mocks)', () => {
             writable: true,
             value: (
               name: string,
-              value: number | string | readonly string[]
+              value: number | string | readonly string[],
             ) => {
               if (!thrown) {
                 thrown = true;
                 Object.defineProperty(res, 'setHeader', {
                   configurable: true,
                   writable: true,
-                  value: orig
+                  value: orig,
                 });
                 throw new Error('tripwire-write-fail');
               }
               return orig(name, value);
-            }
+            },
           });
         }
         next();
-      }
+      },
     );
 
     const adapterHost = app.get(HttpAdapterHost);
@@ -99,7 +99,7 @@ describe('AuthMiddleware (CSRF disabled, no mocks)', () => {
     app.use(
       '/api/auth',
       (req: ExpressRequest, res: ExpressResponse, next: NextFunction) =>
-        middleware.use(req, res, next)
+        middleware.use(req, res, next),
     );
 
     app.use(
@@ -107,7 +107,7 @@ describe('AuthMiddleware (CSRF disabled, no mocks)', () => {
       (req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
         res.setHeader('X-Tripwire', 'reached');
         next();
-      }
+      },
     );
 
     const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {

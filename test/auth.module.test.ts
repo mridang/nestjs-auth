@@ -8,7 +8,7 @@ import { AuthModule } from '../src/auth.module.js';
 import type {
   AuthModuleAsyncOptions,
   AuthOptionsFactory,
-  IAuthModuleOptions
+  IAuthModuleOptions,
 } from '../src/auth-module.options.js';
 // noinspection ES6PreferShortImport
 import { AuthModuleOptions } from '../src/auth-module.options.js';
@@ -25,7 +25,7 @@ function isObjectRecord(v: unknown): v is Record<PropertyKey, unknown> {
 
 function hasProvide(
   p: unknown,
-  token?: InjectionToken
+  token?: InjectionToken,
 ): p is { provide: InjectionToken } {
   return (
     isObjectRecord(p) &&
@@ -44,10 +44,10 @@ function isFactoryProvider<T = unknown>(p: unknown): p is FactoryProvider<T> {
 
 function findProvider(
   providers: readonly Provider[] | undefined,
-  token: InjectionToken
+  token: InjectionToken,
 ): (Provider & { provide: InjectionToken }) | undefined {
   return providers?.find((p): p is Provider & { provide: InjectionToken } =>
-    hasProvide(p, token)
+    hasProvide(p, token),
   );
 }
 
@@ -77,7 +77,7 @@ function isOAuthProvider(v: unknown): v is OAuthProvider {
 class MockHttpAdapterHost {
   // noinspection JSUnusedGlobalSymbols
   httpAdapter = {
-    constructor: { name: 'ExpressAdapter' }
+    constructor: { name: 'ExpressAdapter' },
   };
 }
 
@@ -87,7 +87,7 @@ class MockConfigService {
   private readonly config = {
     AUTH_SECRET: 'test-secret',
     GOOGLE_CLIENT_ID: 'test-client-id',
-    GOOGLE_CLIENT_SECRET: 'test-client-secret'
+    GOOGLE_CLIENT_SECRET: 'test-client-secret',
   };
 
   get(key: string): string {
@@ -108,14 +108,14 @@ class MockAuthConfigService implements AuthOptionsFactory {
           name: 'Google',
           type: 'oauth',
           clientId: this.configService.get('GOOGLE_CLIENT_ID'),
-          clientSecret: this.configService.get('GOOGLE_CLIENT_SECRET')
-        }
+          clientSecret: this.configService.get('GOOGLE_CLIENT_SECRET'),
+        },
       ],
       secret: this.configService.get('AUTH_SECRET'),
       trustHost: true,
       pages: {
-        signIn: '/auth/signin'
-      }
+        signIn: '/auth/signin',
+      },
     };
   }
 }
@@ -123,7 +123,7 @@ class MockAuthConfigService implements AuthOptionsFactory {
 // Test module that provides MockConfigService
 @Module({
   providers: [MockConfigService],
-  exports: [MockConfigService]
+  exports: [MockConfigService],
 })
 class MockProviderModule {}
 
@@ -131,7 +131,7 @@ class MockProviderModule {}
 @Module({
   imports: [MockProviderModule],
   providers: [MockAuthConfigService],
-  exports: [MockAuthConfigService]
+  exports: [MockAuthConfigService],
 })
 class MockConfigModule {}
 
@@ -145,14 +145,14 @@ describe('AuthModule', () => {
             name: 'GitHub',
             type: 'oauth',
             clientId: 'github-client-id',
-            clientSecret: 'github-client-secret'
-          }
+            clientSecret: 'github-client-secret',
+          },
         ],
         secret: 'static-secret',
         trustHost: true,
         pages: {
-          signIn: '/login'
-        }
+          signIn: '/login',
+        },
       };
 
       const dynamicModule = AuthModule.register(staticOptions);
@@ -164,7 +164,7 @@ describe('AuthModule', () => {
       // Find the options provider and check for a 'useFactory' property
       const optionsProvider = findProvider(
         dynamicModule.providers,
-        AuthModuleOptions
+        AuthModuleOptions,
       );
       expect(optionsProvider).toBeDefined();
       expect(isFactoryProvider<IAuthModuleOptions>(optionsProvider)).toBe(true);
@@ -180,7 +180,7 @@ describe('AuthModule', () => {
       const staticOptions: IAuthModuleOptions = {
         providers: [],
         secret: 'test-secret',
-        trustHost: true
+        trustHost: true,
       };
 
       const dynamicModule = AuthModule.register(staticOptions);
@@ -195,12 +195,12 @@ describe('AuthModule', () => {
       const staticOptions: IAuthModuleOptions = {
         providers: [],
         secret: 'test-secret',
-        trustHost: true
+        trustHost: true,
       };
 
       const dynamicModule = AuthModule.register(staticOptions, {
         globalGuard: false,
-        rolesGuard: false
+        rolesGuard: false,
       });
 
       const guardProviders =
@@ -222,14 +222,14 @@ describe('AuthModule', () => {
                 name: 'Google',
                 type: 'oauth',
                 clientId: configService.get('GOOGLE_CLIENT_ID'),
-                clientSecret: configService.get('GOOGLE_CLIENT_SECRET')
-              }
+                clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
+              },
             ],
             secret: configService.get('AUTH_SECRET'),
-            trustHost: true
+            trustHost: true,
           };
         },
-        inject: [MockConfigService]
+        inject: [MockConfigService],
       };
 
       const dynamicModule = AuthModule.registerAsync(factoryOptions);
@@ -240,12 +240,12 @@ describe('AuthModule', () => {
 
       const optionsProvider = findProvider(
         dynamicModule.providers,
-        AuthModuleOptions
+        AuthModuleOptions,
       );
       expect(optionsProvider).toMatchObject({
         provide: AuthModuleOptions,
         useFactory: factoryOptions.useFactory,
-        inject: [MockConfigService]
+        inject: [MockConfigService],
       });
     });
 
@@ -254,8 +254,8 @@ describe('AuthModule', () => {
         providers: [
           {
             provide: HttpAdapterHost,
-            useClass: MockHttpAdapterHost
-          }
+            useClass: MockHttpAdapterHost,
+          },
         ],
         imports: [
           AuthModule.registerAsync({
@@ -265,12 +265,12 @@ describe('AuthModule', () => {
               return {
                 providers: [],
                 secret: configService.get('AUTH_SECRET'),
-                trustHost: true
+                trustHost: true,
               };
             },
-            inject: [MockConfigService]
-          })
-        ]
+            inject: [MockConfigService],
+          }),
+        ],
       }).compile();
 
       const options = module.get<IAuthModuleOptions>(AuthModuleOptions);
@@ -283,22 +283,22 @@ describe('AuthModule', () => {
         useFactory: () => ({
           providers: [],
           secret: 'factory-secret',
-          trustHost: false
-        })
+          trustHost: false,
+        }),
       };
 
       const dynamicModule = AuthModule.registerAsync(factoryOptions);
 
       const optionsProvider = findProvider(
         dynamicModule.providers,
-        AuthModuleOptions
+        AuthModuleOptions,
       );
       expect(optionsProvider).toBeDefined();
 
       expect(optionsProvider).toMatchObject({
         provide: AuthModuleOptions,
         useFactory: factoryOptions.useFactory,
-        inject: [] // empty array
+        inject: [], // empty array
       });
     });
   });
@@ -307,7 +307,7 @@ describe('AuthModule', () => {
     test('should create module with class-based configuration', async () => {
       const classOptions: AuthModuleAsyncOptions = {
         imports: [MockConfigModule],
-        useClass: MockAuthConfigService
+        useClass: MockAuthConfigService,
       };
 
       const dynamicModule = AuthModule.registerAsync(classOptions);
@@ -322,11 +322,11 @@ describe('AuthModule', () => {
       // Find providers robustly
       const optionsProvider = findProvider(
         dynamicModule.providers,
-        AuthModuleOptions
+        AuthModuleOptions,
       );
       const classProvider = findProvider(
         dynamicModule.providers,
-        MockAuthConfigService
+        MockAuthConfigService,
       );
 
       expect(optionsProvider).toBeDefined();
@@ -334,12 +334,12 @@ describe('AuthModule', () => {
 
       expect(optionsProvider).toMatchObject({
         provide: AuthModuleOptions,
-        inject: [MockAuthConfigService]
+        inject: [MockAuthConfigService],
       });
 
       expect(classProvider).toEqual({
         provide: MockAuthConfigService,
-        useClass: MockAuthConfigService
+        useClass: MockAuthConfigService,
       });
     });
 
@@ -348,9 +348,9 @@ describe('AuthModule', () => {
         imports: [
           AuthModule.registerAsync({
             imports: [MockProviderModule],
-            useClass: MockAuthConfigService
-          })
-        ]
+            useClass: MockAuthConfigService,
+          }),
+        ],
       }).compile();
 
       const options = module.get<IAuthModuleOptions>(AuthModuleOptions);
@@ -369,7 +369,7 @@ describe('AuthModule', () => {
     test('should create module with existing provider configuration', async () => {
       const existingOptions: AuthModuleAsyncOptions = {
         imports: [MockConfigModule],
-        useExisting: MockAuthConfigService
+        useExisting: MockAuthConfigService,
       };
 
       const dynamicModule = AuthModule.registerAsync(existingOptions);
@@ -381,11 +381,11 @@ describe('AuthModule', () => {
 
       const optionsProvider = findProvider(
         dynamicModule.providers,
-        AuthModuleOptions
+        AuthModuleOptions,
       );
       expect(optionsProvider).toMatchObject({
         provide: AuthModuleOptions,
-        inject: [MockAuthConfigService]
+        inject: [MockAuthConfigService],
       });
     });
 
@@ -395,9 +395,9 @@ describe('AuthModule', () => {
           MockConfigModule,
           AuthModule.registerAsync({
             imports: [MockConfigModule],
-            useExisting: MockAuthConfigService
-          })
-        ]
+            useExisting: MockAuthConfigService,
+          }),
+        ],
       }).compile();
 
       const options = module.get<IAuthModuleOptions>(AuthModuleOptions);
@@ -424,7 +424,7 @@ describe('AuthModule', () => {
         AuthModule.registerAsync({
           useClass: undefined,
           useExisting: undefined,
-          useFactory: undefined
+          useFactory: undefined,
         });
       }).toThrow('Invalid Auth.js module async options');
     });
@@ -437,8 +437,8 @@ describe('AuthModule', () => {
         useFactory: () => ({
           providers: [],
           secret: 'test',
-          trustHost: true
-        })
+          trustHost: true,
+        }),
       });
 
       expect(dynamicModule.imports).toEqual([MockConfigModule]);
@@ -450,8 +450,8 @@ describe('AuthModule', () => {
         useFactory: () => ({
           providers: [],
           secret: 'test',
-          trustHost: true
-        })
+          trustHost: true,
+        }),
       });
 
       expect(dynamicModule.imports).toEqual([]);
@@ -462,8 +462,8 @@ describe('AuthModule', () => {
         useFactory: () => ({
           providers: [],
           secret: 'test',
-          trustHost: true
-        })
+          trustHost: true,
+        }),
       });
 
       expect(dynamicModule.imports).toEqual([]);

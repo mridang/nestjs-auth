@@ -62,7 +62,7 @@ export abstract class HttpAdapter<TRequest, TResponse> {
    * @returns A record of header names and their values.
    */
   abstract getHeaders(
-    request: TRequest
+    request: TRequest,
   ): Record<string, string | string[] | undefined>;
 
   /**
@@ -88,7 +88,7 @@ export abstract class HttpAdapter<TRequest, TResponse> {
   abstract setHeader(
     response: TResponse,
     name: string,
-    value: string | string[]
+    value: string | string[],
   ): void;
 
   /**

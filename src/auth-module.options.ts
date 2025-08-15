@@ -2,7 +2,7 @@ import {
   InjectionToken,
   ModuleMetadata,
   OptionalFactoryDependency,
-  Type
+  Type,
 } from '@nestjs/common';
 import type { AuthConfig } from '@auth/core';
 import type { Adapter } from '@auth/core/adapters';

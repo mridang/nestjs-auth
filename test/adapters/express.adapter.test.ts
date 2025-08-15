@@ -1,7 +1,7 @@
 import type { ExecutionContext } from '@nestjs/common';
 import type {
   Request as ExpressRequest,
-  Response as ExpressResponse
+  Response as ExpressResponse,
 } from 'express';
 import { ExpressAdapter } from '../../src/adapters/express.adapter.js';
 // noinspection ES6PreferShortImport
@@ -17,7 +17,7 @@ describe('ExpressAdapter', () => {
   test('getRequest() should extract AuthenticatedRequest from context', () => {
     const fakeReq = { user: { id: 'u1' } } as unknown as AuthenticatedRequest;
     const context = {
-      switchToHttp: () => ({ getRequest: () => fakeReq })
+      switchToHttp: () => ({ getRequest: () => fakeReq }),
     } as unknown as ExecutionContext;
 
     const result = adapter.getRequest(context);
@@ -26,10 +26,10 @@ describe('ExpressAdapter', () => {
 
   test('getResponse() should extract ExpressResponse from context', () => {
     const fakeRes = {
-      send: () => {}
+      send: () => {},
     } as unknown as ExpressResponse;
     const context = {
-      switchToHttp: () => ({ getResponse: () => fakeRes })
+      switchToHttp: () => ({ getResponse: () => fakeRes }),
     } as unknown as ExecutionContext;
 
     const result = adapter.getResponse(context);
@@ -43,7 +43,7 @@ describe('ExpressAdapter', () => {
 
   test('getHost() should return Host header or fallback to localhost', () => {
     const reqWithHost = {
-      get: (name: string) => (name === 'host' ? 'api.example.com' : undefined)
+      get: (name: string) => (name === 'host' ? 'api.example.com' : undefined),
     } as unknown as ExpressRequest;
     expect(adapter.getHost(reqWithHost)).toBe('api.example.com');
 
@@ -72,7 +72,7 @@ describe('ExpressAdapter', () => {
 
   test('getCookie() should return request.headers.cookie', () => {
     const reqWithCookie = {
-      headers: { cookie: 'sid=123' }
+      headers: { cookie: 'sid=123' },
     } as unknown as ExpressRequest;
     expect(adapter.getCookie(reqWithCookie)).toBe('sid=123');
 
@@ -93,7 +93,7 @@ describe('ExpressAdapter', () => {
       setHeader: (n: string, v: string) => {
         nameCaptured = n;
         valueCaptured = v;
-      }
+      },
     } as unknown as ExpressResponse;
 
     adapter.setHeader(res, 'X-Test', 'yes');
@@ -107,7 +107,7 @@ describe('ExpressAdapter', () => {
       status: (code: number) => {
         codeCaptured = code;
         return res;
-      }
+      },
     } as unknown as ExpressResponse;
 
     adapter.setStatus(res, 201);
@@ -120,7 +120,7 @@ describe('ExpressAdapter', () => {
       send: (body: string) => {
         bodyCaptured = body;
         return res;
-      }
+      },
     } as unknown as ExpressResponse;
 
     adapter.send(res, 'hello');

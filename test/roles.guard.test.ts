@@ -51,7 +51,7 @@ describe('RolesGuard', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [RolesGuard, Reflector],
-      controllers: [TestController]
+      controllers: [TestController],
     }).compile();
 
     guard = module.get<RolesGuard>(RolesGuard);
@@ -62,7 +62,7 @@ describe('RolesGuard', () => {
       const mockContext = createMockContext(
         TestController.prototype.publicMethod,
         TestController,
-        {}
+        {},
       );
 
       const result = guard.canActivate(mockContext);
@@ -74,7 +74,7 @@ describe('RolesGuard', () => {
       const mockContext = createMockContext(
         TestController.prototype.emptyRolesMethod,
         TestController,
-        {}
+        {},
       );
 
       const result = guard.canActivate(mockContext);
@@ -87,8 +87,8 @@ describe('RolesGuard', () => {
         TestController.prototype.adminOnlyMethod,
         TestController,
         {
-          user: { id: '123', email: 'test@example.com' } // No roles
-        }
+          user: { id: '123', email: 'test@example.com' }, // No roles
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -104,9 +104,9 @@ describe('RolesGuard', () => {
           user: {
             id: '123',
             email: 'test@example.com',
-            roles: ['user', 'viewer']
-          }
-        }
+            roles: ['user', 'viewer'],
+          },
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -122,9 +122,9 @@ describe('RolesGuard', () => {
           user: {
             id: '123',
             email: 'test@example.com',
-            roles: ['user', 'moderator', 'viewer']
-          }
-        }
+            roles: ['user', 'moderator', 'viewer'],
+          },
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -140,9 +140,9 @@ describe('RolesGuard', () => {
           user: {
             id: '123',
             email: 'test@example.com',
-            roles: ['admin', 'moderator', 'user']
-          }
-        }
+            roles: ['admin', 'moderator', 'user'],
+          },
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -158,9 +158,9 @@ describe('RolesGuard', () => {
           user: {
             id: '123',
             email: 'test@example.com',
-            roles: ['admin']
-          }
-        }
+            roles: ['admin'],
+          },
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -172,7 +172,7 @@ describe('RolesGuard', () => {
       const mockContext = createMockContext(
         TestController.prototype.adminOnlyMethod,
         TestController,
-        {} // No user property
+        {}, // No user property
       );
 
       const result = guard.canActivate(mockContext);
@@ -188,9 +188,9 @@ describe('RolesGuard', () => {
           user: {
             id: '123',
             email: 'test@example.com',
-            roles: undefined
-          }
-        }
+            roles: undefined,
+          },
+        },
       );
 
       const result = guard.canActivate(mockContext);
@@ -210,15 +210,15 @@ function createMockContext(
   controllerClass: Function,
   requestData: {
     user?: Session['user'] & { roles?: string[] };
-  }
+  },
 ): ExecutionContext {
   const mockRequest = { ...requestData };
 
   return {
     switchToHttp: () => ({
-      getRequest: () => mockRequest
+      getRequest: () => mockRequest,
     }),
     getHandler: () => handler,
-    getClass: () => controllerClass
+    getClass: () => controllerClass,
   } as ExecutionContext;
 }

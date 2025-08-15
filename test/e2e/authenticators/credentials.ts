@@ -23,7 +23,7 @@ import type { TestUser } from '../client-sessions.module.js';
 
 export async function authenticateCredentials(
   agent: ReturnType<typeof request.agent>,
-  who: TestUser
+  who: TestUser,
 ): Promise<void> {
   const csrfRes = await agent.get('/auth/csrf').expect(200);
   const csrfToken = csrfRes.body?.csrfToken;
@@ -35,7 +35,7 @@ export async function authenticateCredentials(
     .send({
       username: who.email,
       password: who.password,
-      csrfToken
+      csrfToken,
     })
     .expect(302);
 }

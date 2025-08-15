@@ -38,7 +38,7 @@ export const defaultOptions = Object.freeze({
      * How frequently to update the session expiry in seconds
      * @default 3600 (1 hour)
      */
-    updateAge: 60 * 60
+    updateAge: 60 * 60,
   },
 
   /**
@@ -111,6 +111,6 @@ export const defaultOptions = Object.freeze({
       if (url.startsWith('/') && !url.startsWith('//')) return url;
       if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
-    }
-  }
+    },
+  },
 } as const);
