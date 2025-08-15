@@ -19,11 +19,11 @@
  *              session. The promise is rejected if any step fails.
  */
 import request from 'supertest';
-import type { E2EUser } from '../e2e.module.js';
+import type { TestUser } from '../client-sessions.module.js';
 
 export async function authenticateCredentials(
   agent: ReturnType<typeof request.agent>,
-  who: E2EUser
+  who: TestUser
 ): Promise<void> {
   const csrfRes = await agent.get('/auth/csrf').expect(200);
   const csrfToken = csrfRes.body?.csrfToken;

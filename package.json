@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@auth/core": "^0.40.0",
+    "@auth/unstorage-adapter": "^2.10.0",
     "@jest/globals": "^30.0.5",
     "@mridang/eslint-defaults": "^1.4.0",
     "@nestjs/common": "11.1.5",
@@ -79,7 +80,8 @@
     "supertest": "^7.1.4",
     "testcontainers": "^11.5.0",
     "ts-jest": "29.4.0",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "unstorage": "^1.16.1"
   },
   "repository": {
     "type": "git",

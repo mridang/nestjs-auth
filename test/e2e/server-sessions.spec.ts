@@ -1,11 +1,12 @@
+// file: test/e2e/server-sessions.spec.ts
 /**
- * E2E: AuthModule matrix across provider type, cookie security, and user
- * actor. Uses a dynamic Nest module with both providers configured and a
+ * E2E: ServerSessions matrix across session strategy, cookie security, and user
+ * actor. Uses a dynamic Nest module with database session strategy and a
  * mock OIDC server. Verifies route access, session payloads, exposed
  * providers, and CSRF cookie naming under secure and insecure cookies.
  *
  * Matrix:
- *   - Providers: Credentials, Keycloak (OIDC)
+ *   - Strategy: Database (with OAuth)
  *   - Cookies: Insecure (HTTP), Secure (HTTPS semantics for tests)
  *   - Actors: unauthenticated, user, admin
  *
@@ -21,8 +22,7 @@ import { agent as SuperAgent } from 'superagent';
 import { URL } from 'url';
 import { CookieAccessInfo } from 'cookiejar';
 import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
-import { ClientSessionsModule, TestUser } from './client-sessions.module.js';
-import { authenticateCredentials } from './authenticators/credentials.js';
+import { ServerSessionsModule, TestUser } from './server-sessions.module.js';
 import { authenticateOidc } from './authenticators/oidc.js';
 import './supertest-extensions';
 
@@ -49,15 +49,13 @@ const TEST_USERS: Record<'admin' | 'user', TestUser> = {
     id: '1',
     name: 'Admin User',
     email: 'admin@example.com',
-    roles: ['admin', 'user'],
-    password: 'password'
+    roles: ['admin', 'user']
   },
   user: {
     id: '2',
     name: 'Regular User',
     email: 'user@example.com',
-    roles: ['user'],
-    password: 'password'
+    roles: ['user']
   }
 };
 
@@ -78,19 +76,10 @@ afterAll(async () => {
   }
 });
 
-describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () => {
+describe('ServerSessions E2E matrix (strategy x cookie modes x access matrix)', () => {
   [
     {
-      label: 'Credentials provider',
-      authenticate: async (
-        agent: ReturnType<typeof request.agent>,
-        who: TestUser
-      ): Promise<void> => {
-        await authenticateCredentials(agent, who);
-      }
-    },
-    {
-      label: 'Keycloak provider',
+      label: 'Database strategy with OAuth',
       authenticate: async (
         agent: ReturnType<typeof request.agent>,
         who: TestUser
@@ -98,8 +87,8 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
         await authenticateOidc(appRef!, agent, who);
       }
     }
-  ].forEach(({ label: providerLabel, authenticate: authFn }) => {
-    describe(providerLabel, () => {
+  ].forEach(({ label: strategyLabel, authenticate: authFn }) => {
+    describe(strategyLabel, () => {
       [
         {
           label: 'Insecure cookies (HTTP)',
@@ -119,7 +108,7 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
 
             const moduleRef = await Test.createTestingModule({
               imports: [
-                ClientSessionsModule.register({
+                ServerSessionsModule.register({
                   useSecureCookies: useSecureCookies,
                   oauthIssuer: `${oauthHost}/default`,
                   users: TEST_USERS
@@ -156,10 +145,6 @@ describe('AuthModule E2E matrix (providers x cookie modes x access matrix)', () 
 
             expect(res.body).toEqual(
               expect.objectContaining({
-                credentials: expect.objectContaining({
-                  id: 'credentials',
-                  type: 'credentials'
-                }),
                 keycloak: expect.objectContaining({
                   id: 'keycloak',
                   type: 'oidc'
