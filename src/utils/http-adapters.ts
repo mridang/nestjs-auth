@@ -39,30 +39,33 @@ export function toWebRequest(
   const method = adapter.getMethod(request);
   const contentType = headers.get('content-type');
 
-  let body: RequestBody | undefined;
+  let rawBody: RequestBody | undefined;
 
   if (!/GET|HEAD/.test(method.toUpperCase())) {
-    const rawBody = adapter.getBody(request);
+    const bodyData = adapter.getBody(request);
 
-    if (rawBody !== undefined && rawBody !== null) {
+    if (bodyData !== undefined && bodyData !== null) {
       if (contentType?.includes('application/x-www-form-urlencoded')) {
-        body = qs.stringify(rawBody as Record<string, unknown>, {
+        rawBody = qs.stringify(bodyData as Record<string, unknown>, {
           arrayFormat: 'repeat',
         });
       } else if (contentType?.includes('application/json')) {
-        body = JSON.stringify(rawBody);
-      } else if (typeof rawBody === 'string') {
-        body = rawBody;
-      } else if (Buffer.isBuffer(rawBody)) {
-        body = rawBody;
-      } else if (typeof rawBody === 'object') {
+        rawBody = JSON.stringify(bodyData);
+      } else if (Buffer.isBuffer(bodyData)) {
+        rawBody = bodyData;
+      } else if (typeof bodyData === 'string') {
+        rawBody = bodyData;
+      } else if (typeof bodyData === 'object') {
         // Fallback for object bodies without a proper content-type.
-        body = qs.stringify(rawBody as Record<string, unknown>, {
+        rawBody = qs.stringify(bodyData as Record<string, unknown>, {
           arrayFormat: 'repeat',
         });
       }
     }
   }
+
+  const body =
+    rawBody && Buffer.isBuffer(rawBody) ? new Uint8Array(rawBody) : rawBody;
 
   return new Request(url, {
     method,
